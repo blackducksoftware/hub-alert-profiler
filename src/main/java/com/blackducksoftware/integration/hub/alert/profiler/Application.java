@@ -23,20 +23,57 @@
  */
 package com.blackducksoftware.integration.hub.alert.profiler;
 
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableBatchProcessing
+import com.blackducksoftware.integration.hub.alert.profiler.data.DataCollector;
+
 @EnableScheduling
 @SpringBootApplication
 public class Application {
 
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
+
+    @Autowired
+    private JMXClient jmxClient;
+
+    @Autowired
+    private List<DataCollector> collectorList;
+
     public static void main(final String[] args) {
         new SpringApplicationBuilder(Application.class).logStartupInfo(false).run(args);
+    }
+
+    @PostConstruct
+    public void initJMXConnection() {
+        try {
+            jmxClient.connect();
+        } catch (final IOException ex) {
+            logger.error("Error connecting to JMX client", ex);
+        }
+    }
+
+    @PreDestroy
+    public void cleanUp() {
+        try {
+            if (!collectorList.isEmpty()) {
+                collectorList.forEach(collector -> {
+                    collector.collect();
+                });
+            }
+            jmxClient.disconnect();
+        } catch (final IOException ex) {
+            logger.error("Error disconnecting to JMX client", ex);
+        }
     }
 }

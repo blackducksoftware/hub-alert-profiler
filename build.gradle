@@ -17,13 +17,21 @@ plugins {
 
 version = '1.0.0-SNAPSHOT'
 
+repositories {
+    mavenLocal()
+}
+
 apply plugin: 'com.blackducksoftware.integration.solution'
 
 springBoot { mainClass = 'com.blackducksoftware.integration.hub.alert.profiler.Application' }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:25.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:27.0.0-SNAPSHOT'
     compile 'org.springframework.boot:spring-boot-starter'
-    compile 'org.springframework.boot:spring-boot-starter-batch'
     compile 'org.springframework.boot:spring-boot-devtools'
+}
+
+task runProfiler(type:Exec, dependsOn: [build]) {
+    File jarFile = new File("build/libs/${rootProject.name}-${version}.jar")
+    commandLine 'java', '-jar', jarFile.getAbsolutePath()
 }
