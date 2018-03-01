@@ -39,6 +39,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
@@ -83,16 +84,20 @@ public class NotificationGenerator {
     }
 
     private void setupConnection() {
-        final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-        final HubServerConfigBuilder builder = new HubServerConfigBuilder();
-        builder.setAlwaysTrustServerCertificate(true);
-        builder.setApiKey(hubApiKey);
-        builder.setHubUrl(hubUrl);
-        builder.setTimeout(hubTimeout);
-        final HubServerConfig hubConfig = builder.build();
-        final RestConnection restConnection = hubConfig.createApiKeyRestConnection(intLogger);
-        hubServicesFactory = new HubServicesFactory(restConnection);
-        projectDataService = hubServicesFactory.createProjectService();
+        try {
+            final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+            final HubServerConfigBuilder builder = new HubServerConfigBuilder();
+            builder.setAlwaysTrustServerCertificate(true);
+            builder.setApiToken(hubApiKey);
+            builder.setHubUrl(hubUrl);
+            builder.setTimeout(hubTimeout);
+            final HubServerConfig hubConfig = builder.build();
+            final RestConnection restConnection = hubConfig.createRestConnection(intLogger);
+            hubServicesFactory = new HubServicesFactory(restConnection);
+            projectDataService = hubServicesFactory.createProjectService();
+        } catch (final EncryptionException ex) {
+            logger.error("Error creating connection", ex);
+        }
     }
 
     @PreDestroy
