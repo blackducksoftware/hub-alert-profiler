@@ -27,87 +27,38 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
-import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
-import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.data.generator.AbstractGenerator;
+import com.blackducksoftware.integration.hub.data.generator.config.GeneratorConfig;
+import com.blackducksoftware.integration.hub.data.generator.config.ProjectConfigHelper;
 import com.blackducksoftware.integration.hub.service.CodeLocationService;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.ProjectService;
-import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
-public class NotificationGenerator {
-    private final Logger logger = LoggerFactory.getLogger(NotificationGenerator.class);
-
+public class NotificationGenerator extends AbstractGenerator {
     private final static String HUB_PROJECT = "hub-alert-profiling-test";
+    private static final String HUB_PROJECT_VERSION = "1.0.0";
 
-    @Value("${blackduck.hub.url}")
-    private String hubUrl;
-
-    @Value("${blackduck.hub.api.key}")
-    private String hubApiKey;
-
-    @Value("${blackduck.hub.timeout}")
-    private String hubTimeout;
-
-    private HubServicesFactory hubServicesFactory;
-    private ProjectService projectDataService;
+    private final Logger logger = LoggerFactory.getLogger(NotificationGenerator.class);
+    private final GeneratorConfig generatorConfig;
+    private final ProjectConfigHelper projectConfigHelper;
     private int iteration = 0;
 
-    @PostConstruct
-    public void init() throws IntegrationException {
-        logger.info("===============================");
-        logger.info("= Hub URL:     {}", hubUrl);
-        if (StringUtils.isNotBlank(hubApiKey)) {
-            logger.info("= Hub API Key: **********");
-        } else {
-            logger.info("= Hub API Key: (empty)");
-        }
-        logger.info("= Hub Timeout: {}", hubTimeout);
-        logger.info("===============================");
-        setupConnection();
-    }
-
-    private void setupConnection() {
-        try {
-            final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-            final HubServerConfigBuilder builder = new HubServerConfigBuilder();
-            builder.setAlwaysTrustServerCertificate(true);
-            builder.setApiToken(hubApiKey);
-            builder.setHubUrl(hubUrl);
-            builder.setTimeout(hubTimeout);
-            final HubServerConfig hubConfig = builder.build();
-            final RestConnection restConnection = hubConfig.createRestConnection(intLogger);
-            hubServicesFactory = new HubServicesFactory(restConnection);
-            projectDataService = hubServicesFactory.createProjectService();
-        } catch (final EncryptionException ex) {
-            logger.error("Error creating connection", ex);
-        }
-    }
-
-    @PreDestroy
-    public void cleanup() {
-        try {
-            final ProjectView createdProject = projectDataService.getProjectByName(HUB_PROJECT);
-            projectDataService.deleteHubProject(createdProject);
-        } catch (final IntegrationException ex) {
-            logger.info("Error Deleting project {}", HUB_PROJECT, ex);
-        }
+    @Autowired
+    public NotificationGenerator(final GeneratorConfig generatorConfig, final ProjectConfigHelper projectConfigHelper) {
+        super(generatorConfig);
+        this.generatorConfig = generatorConfig;
+        this.projectConfigHelper = projectConfigHelper;
+        this.projectConfigHelper.setProjectName(HUB_PROJECT);
+        this.projectConfigHelper.setProjectVersion(HUB_PROJECT_VERSION);
+        this.projectConfigHelper.createProjectVersion();
     }
 
     @Scheduled(initialDelay = 30000, fixedRate = 60000)
@@ -115,9 +66,9 @@ public class NotificationGenerator {
         try {
             logger.info("Begin generating notifications");
             if (iteration % 2 == 0) {
-                uploadBdio("bdio/component-bdio.jsonld");
+                uploadBdio("bdio/notification/component-bdio.jsonld");
             } else {
-                uploadBdio("bdio/clean-bdio.jsonld");
+                uploadBdio("bdio/notification/clean-bdio.jsonld");
             }
         } catch (final IntegrationException | URISyntaxException | IOException ex) {
             logger.info("Error creating notifications", ex);
@@ -132,7 +83,7 @@ public class NotificationGenerator {
         final File tempFile = File.createTempFile("tempBdio", ".jsonld");
         FileUtils.copyInputStreamToFile(classPathResource.getInputStream(), tempFile);
         logger.info("Bdio file to upload: {}", tempFile);
-        final CodeLocationService service = hubServicesFactory.createCodeLocationService();
+        final CodeLocationService service = generatorConfig.getHubServicesFactory().createCodeLocationService();
         service.importBomFile(tempFile);
         tempFile.delete();
     }

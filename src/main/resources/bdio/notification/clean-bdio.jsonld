@@ -1,7 +1,7 @@
 [
   {
     "specVersion": "1.1.0",
-    "spdx:name": "hub-alert-test-project/hub-alert-profiling-test/1.0.0 gradle/bom",
+    "spdx:name": "hub-notification-data-test-project/hub-notification-data-test/1.0.0 gradle/bom",
     "@id": "uuid:5e59bb0d-0106-4585-88b3-c563bb017ab4",
     "@type": "BillOfMaterials",
     "customData": {
@@ -10,13 +10,13 @@
     "relationship": []
   },
   {
-    "name": "hub-alert-profiling-test",
+    "name": "hub-notification-data-test",
     "revision": "1.0.0",
-    "@id": "http:maven/com_blackducksoftware_integration/hub_alert_profiling_test/1_0_0",
+    "@id": "http:maven/com_blackducksoftware_integration/hub_notification_data_test/1_0_0",
     "@type": "Project",
     "externalIdentifier": {
       "externalSystemTypeId": "maven",
-      "externalId": "com.blackducksoftware.integration:hub-alert-profiling-test:1.0.0",
+      "externalId": "com.blackducksoftware.integration:hub-notification-data-test:1.0.0",
       "externalIdMetaData": {
         "forge": {
           "name": "maven",
@@ -24,7 +24,7 @@
           "kbSeparator": ":"
         },
         "group": "com.blackducksoftware.integration",
-        "name": "hub-alert-profiling-test",
+        "name": "hub-notification-data-test",
         "version": "1.0.0"
       }
     },

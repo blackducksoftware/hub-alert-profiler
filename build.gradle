@@ -23,7 +23,7 @@ repositories {
 
 apply plugin: 'com.blackducksoftware.integration.solution'
 
-springBoot { mainClass = 'com.blackducksoftware.integration.hub.alert.profiler.Application' }
+springBoot { mainClass = 'com.blackducksoftware.integration.hub.data.generator.Application' }
 
 dependencies {
     compile 'com.blackducksoftware.integration:hub-common:30.0.2'
