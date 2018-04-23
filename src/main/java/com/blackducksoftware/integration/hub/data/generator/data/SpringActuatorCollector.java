@@ -1,5 +1,5 @@
 /**
- * hub-alert-profiler
+ * hub-data-generator
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.profiler.data;
+package com.blackducksoftware.integration.hub.data.generator.data;
 
 import java.io.File;
 import java.io.IOException;

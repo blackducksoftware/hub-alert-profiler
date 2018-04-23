@@ -1,5 +1,5 @@
 /**
- * hub-alert-profiler
+ * hub-data-generator
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.profiler;
+package com.blackducksoftware.integration.hub.data.generator;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +36,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.blackducksoftware.integration.hub.alert.profiler.data.DataCollector;
+import com.blackducksoftware.integration.hub.data.generator.data.DataCollector;
 
 @EnableScheduling
 @SpringBootApplication

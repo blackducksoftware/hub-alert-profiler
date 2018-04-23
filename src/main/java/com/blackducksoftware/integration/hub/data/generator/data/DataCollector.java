@@ -1,5 +1,5 @@
 /**
- * hub-alert-profiler
+ * hub-data-generator
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,14 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.profiler.mbean;
+package com.blackducksoftware.integration.hub.data.generator.data;
 
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+public abstract class DataCollector {
 
-public class HeapMemoryDescriptor extends MBeanAttributeDescriptor {
-
-    public HeapMemoryDescriptor() throws MalformedObjectNameException {
-        super(new ObjectName("java.lang:type=Memory"), "HeapMemoryUsage");
-    }
+    public abstract void collect();
 }

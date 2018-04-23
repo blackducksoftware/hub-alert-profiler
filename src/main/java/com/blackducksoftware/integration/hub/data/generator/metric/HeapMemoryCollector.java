@@ -1,5 +1,5 @@
 /**
- * hub-alert-profiler
+ * hub-data-generator
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.profiler.data.metric;
+package com.blackducksoftware.integration.hub.data.generator.metric;
 
 import java.io.IOException;
 
@@ -38,9 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.profiler.JMXClient;
-import com.blackducksoftware.integration.hub.alert.profiler.data.DataCollector;
-import com.blackducksoftware.integration.hub.alert.profiler.mbean.HeapMemoryDescriptor;
+import com.blackducksoftware.integration.hub.data.generator.JMXClient;
+import com.blackducksoftware.integration.hub.data.generator.data.DataCollector;
+import com.blackducksoftware.integration.hub.data.generator.mbean.HeapMemoryDescriptor;
 
 @Component
 public class HeapMemoryCollector extends DataCollector {
