@@ -1,5 +1,5 @@
 ## Overview ##
-This application collects data on a running instance of hub-alert in order to provide profiling information.
+This application generates test data on an instance of the hub in order to provide data for testing functionality of the hub.
 
 ## Build ##
 
